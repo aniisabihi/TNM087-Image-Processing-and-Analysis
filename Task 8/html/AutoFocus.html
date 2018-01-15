@@ -1,0 +1,230 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>AutoFocus</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-12-13"><meta name="DC.source" content="AutoFocus.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Who has done it</a></li><li><a href="#4">Syntax of the function</a></li><li><a href="#5">Basic version control (in case you need more than one attempt)</a></li><li><a href="#6">General rules</a></li><li><a href="#7">Size of images and number of images</a></li><li><a href="#8">Generate a grid, convert the Euclidean to polar coordinates</a></li><li><a href="#9">Number of COMPLETE rings in the Fourier domain</a></li><li><a href="#10">Number of grid points in each ring</a></li><li><a href="#11">Sum of fft magnitude per image - per ring</a></li><li><a href="#12">Compute weighted average over the ring sums</a></li><li><a href="#13">Requested result</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> sfunction = AutoFocus(FStack)
+</pre><pre class="codeinput"><span class="comment">%TNM087Template General Template for TNM087 Lab Tasks</span>
+<span class="comment">%   Everybody has to use this template</span>
+<span class="comment">%</span>
+</pre><h2 id="3">Who has done it</h2><p>Author: Aniisa Bihi, anibi335 Co-author: Molly Middagsfjell, moljo321</p><h2 id="4">Syntax of the function</h2><p>Input arguments: FStack is the input variable with the 192 images of size</p><p>Output arguments: sfunction is the output variable that contains the sharpness function sfunction(l) is the sharpness value = normed frequency content of image l in FStack</p><p>You MUST NEVER change the first line</p><h2 id="5">Basic version control (in case you need more than one attempt)</h2><p>Version: 1 Date: 13/12/2017</p><p>Gives a history of your submission to Lisam. Version and date for this function have to be updated before each submission to Lisam (in case you need more than one attempt)</p><h2 id="6">General rules</h2><p>1) Don't change the structure of the template by removing %% lines</p><p>2) Document what you are doing using comments</p><p>3) Before submitting make the code readable by using automatic indentation       ctrl-a / ctrl-i</p><p>4) In case a task requires that you have to submit more than one function       save every function in a single file and collect all of them in a       zip-archive and upload that to Lisam. NO RAR, NO GZ, ONLY ZIP!       All non-zip archives will be rejected automatically</p><p>5) Often you must do something else between the given commands in the       template</p><h2 id="7">Size of images and number of images</h2><pre class="codeinput">[sx,sy,noimages] = size(FStack);
+</pre><pre class="codeoutput error">Not enough input arguments.
+
+Error in AutoFocus (line 50)
+[sx,sy,noimages] = size(FStack);
+</pre><h2 id="8">Generate a grid, convert the Euclidean to polar coordinates</h2><pre class="codeinput">[X, Y] = meshgrid(1:sx,1:sy);
+[TH,R] = cart2pol(X,Y);
+</pre><h2 id="9">Number of COMPLETE rings in the Fourier domain</h2><p>ignore the points in the corners</p><pre class="codeinput">norings = 8; <span class="comment">%Change this if you want</span>
+
+RQ =round(R/max(R(:))*norings); <span class="comment">%this is the quantized version of R where</span>
+<span class="comment">% the pixel value is the index of the ring</span>
+<span class="comment">% (origin = 0, and the point (0,r) has index norings</span>
+<span class="comment">%...</span>
+
+maxindex = max(RQ(:));
+</pre><h2 id="10">Number of grid points in each ring</h2><pre class="codeinput">ptsperring = zeros(norings,1);
+<span class="keyword">for</span> ringno = 1:norings+1
+    ptsperring(ringno) = sum(RQ(:) == ringno-1);
+<span class="keyword">end</span>
+</pre><h2 id="11">Sum of fft magnitude per image - per ring</h2><pre class="codeinput">absfftsums = zeros(noimages,maxindex);
+dist = 1/norings;
+
+<span class="keyword">for</span> imno = 1:noimages
+    padimage = padarray(FStack(:,:,imno),[1 1]); <span class="comment">% Read about zero-padding</span>
+    ftplan = fft2(padimage); <span class="comment">% 2D fft</span>
+    cftplan = fftshift(ftplan(2:end-1, 2:end-1)); <span class="comment">% move origin to the center</span>
+
+    <span class="keyword">for</span> ringno = 1:norings
+        ringmask = (RQ&gt;=dist*(ringno-1) &amp; RQ&lt;=dist*ringno); <span class="comment">%this is a logical array defining the ring</span>
+        akm = abs(ringmask*cftplan);
+        absfftsums(imno,ringno) = sum(akm(:))/ptsperring(ringno);<span class="comment">% average over Fourier magnitude in ring</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><h2 id="12">Compute weighted average over the ring sums</h2><pre class="codeinput">meanfreqcontent = zeros(noimages,1);
+
+w = 1:maxindex; <span class="comment">% here you may use the ring index, radius or something you define</span>
+
+<span class="keyword">for</span> imno = 1:noimages
+    meanimg = FStack(:,:,imno);
+    meanfreqcontent(imno) = sum(absfftsums(imno,:).*w)/mean(meanimg(:));<span class="comment">% combine w and absfftsums</span>
+<span class="keyword">end</span>
+</pre><h2 id="13">Requested result</h2><p>default solution but you can invent something else if you want</p><pre class="codeinput">sfunction = meanfreqcontent;
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function sfunction = AutoFocus(FStack)
+%TNM087Template General Template for TNM087 Lab Tasks
+%   Everybody has to use this template
+%
+%% Who has done it
+%
+% Author: Aniisa Bihi, anibi335
+% Co-author: Molly Middagsfjell, moljo321
+%
+%% Syntax of the function
+%
+% Input arguments: FStack is the input variable with the 192 images of size
+% 
+% Output arguments: sfunction is the output variable that contains the sharpness function  
+% sfunction(l) is the sharpness value = normed frequency content of image l
+% in FStack
+%
+% You MUST NEVER change the first line
+%
+%% Basic version control (in case you need more than one attempt)
+%
+% Version: 1
+% Date: 13/12/2017
+%
+% Gives a history of your submission to Lisam.
+% Version and date for this function have to be updated before each
+% submission to Lisam (in case you need more than one attempt)
+%
+%% General rules
+%
+% 1) Don't change the structure of the template by removing %% lines
+%
+% 2) Document what you are doing using comments
+%
+% 3) Before submitting make the code readable by using automatic indentation
+%       ctrl-a / ctrl-i
+%
+% 4) In case a task requires that you have to submit more than one function
+%       save every function in a single file and collect all of them in a
+%       zip-archive and upload that to Lisam. NO RAR, NO GZ, ONLY ZIP!
+%       All non-zip archives will be rejected automatically
+%
+% 5) Often you must do something else between the given commands in the
+%       template
+%
+%
+
+%% Size of images and number of images
+%
+[sx,sy,noimages] = size(FStack);
+
+%% Generate a grid, convert the Euclidean to polar coordinates
+%
+[X, Y] = meshgrid(1:sx,1:sy);
+[TH,R] = cart2pol(X,Y);
+
+%% Number of COMPLETE rings in the Fourier domain 
+% ignore the points in the corners
+
+norings = 8; %Change this if you want
+
+RQ =round(R/max(R(:))*norings); %this is the quantized version of R where 
+% the pixel value is the index of the ring 
+% (origin = 0, and the point (0,r) has index norings  
+%...
+
+maxindex = max(RQ(:));
+
+%% Number of grid points in each ring
+
+ptsperring = zeros(norings,1);
+for ringno = 1:norings+1 
+    ptsperring(ringno) = sum(RQ(:) == ringno-1);  
+end
+
+%% Sum of fft magnitude per image - per ring
+
+absfftsums = zeros(noimages,maxindex);
+dist = 1/norings;
+
+for imno = 1:noimages
+    padimage = padarray(FStack(:,:,imno),[1 1]); % Read about zero-padding
+    ftplan = fft2(padimage); % 2D fft
+    cftplan = fftshift(ftplan(2:end-1, 2:end-1)); % move origin to the center
+    
+    for ringno = 1:norings
+        ringmask = (RQ>=dist*(ringno-1) & RQ<=dist*ringno); %this is a logical array defining the ring
+        akm = abs(ringmask*cftplan);
+        absfftsums(imno,ringno) = sum(akm(:))/ptsperring(ringno);% average over Fourier magnitude in ring
+    end
+end
+    
+%% Compute weighted average over the ring sums
+%
+
+meanfreqcontent = zeros(noimages,1);
+
+w = 1:maxindex; % here you may use the ring index, radius or something you define
+
+for imno = 1:noimages
+    meanimg = FStack(:,:,imno); 
+    meanfreqcontent(imno) = sum(absfftsums(imno,:).*w)/mean(meanimg(:));% combine w and absfftsums
+end
+
+%% Requested result
+% default solution but you can invent something else if you want
+sfunction = meanfreqcontent;
+
+end
+
+
+##### SOURCE END #####
+--></body></html>
